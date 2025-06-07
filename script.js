@@ -7,143 +7,120 @@ const products = [
     { id: 6, name: "Gaming PC", price: 3000, image: "gaming_pc.jpg" },
     { id: 7, name: "Guitar", price: 499, image: "guitar.jpg" },
     { id: 8, name: "Nintendo", price: 599, image: "nintendo.jpg" },
-];
-
-const productList = document.getElementById("productList");
-const searchBar = document.getElementById("searchBar");
-const cartDiv = document.getElementById("cart");
-
-// --- Cart Data ---
-let cart = [];
-
-// Load cart from local storage
-function loadCart() {
+  ];
+  
+  const productList = document.getElementById("productList");
+  const searchBar = document.getElementById("searchBar");
+  const cartList = document.getElementById("cartList");
+  const totalPrice = document.getElementById("totalPrice");
+  const checkoutButton = document.getElementById("checkoutButton");
+  
+  let cart = [];
+  
+  // Load cart from localStorage
+  function loadCart() {
     const storedCart = localStorage.getItem("cart");
     if (storedCart) {
-        cart = JSON.parse(storedCart);
+      cart = JSON.parse(storedCart);
+    } else {
+      cart = [];
     }
-}
-
-// Save cart to local storage
-function saveCart() {
+  }
+  
+  // Save cart to localStorage
+  function saveCart() {
     localStorage.setItem("cart", JSON.stringify(cart));
-}
-
-// Display products
-function displayProducts(products) {
+  }
+  
+  // Display products
+  function displayProducts(productsToShow) {
     productList.innerHTML = "";
-
-    if (products.length === 0) {
-        productList.innerHTML = `<p class="no-products">No products found.</p>`;
-        return;
+  
+    if (productsToShow.length === 0) {
+      productList.innerHTML = `<p class="no-products">No products found.</p>`;
+      return;
     }
-
-    products.forEach((product) => {
-        const productDiv = document.createElement("div");
-        productDiv.className = "product";
-        productDiv.innerHTML = `
-            <img src="${product.image}" alt="${product.name}">
-            <h3>${product.name}</h3>
-            <p>$${product.price}</p>
-            <button onclick="addToCart(${product.id})">Add to Cart</button>
-        `;
-        productList.appendChild(productDiv);
+  
+    productsToShow.forEach((product) => {
+      const productDiv = document.createElement("div");
+      productDiv.className = "product";
+      productDiv.innerHTML = `
+        <img src="${product.image}" alt="${product.name}">
+        <h3>${product.name}</h3>
+        <p>$${product.price}</p>
+        <button onclick="addToCart(${product.id})">Add to Cart</button>
+      `;
+      productList.appendChild(productDiv);
     });
-}
-
-// Add item to cart
-function addToCart(productId) {
-    const product = products.find(p => p.id === productId);
+  }
+  
+  // Add product to cart
+  function addToCart(productId) {
+    const product = products.find((p) => p.id === productId);
     if (product) {
-        cart.push(product);
-        alert(`${product.name} added to the cart!`);
-        saveCart();
-        displayCart();
+      cart.push(product);
+      alert(`${product.name} added to the cart!`);
+      saveCart();
+      displayCart();
     }
-}
-
-// Remove item from cart
-function removeFromCart(index) {
+  }
+  
+  // Remove product from cart by index
+  function removeFromCart(index) {
     cart.splice(index, 1);
     saveCart();
     displayCart();
-}
-
-// Display cart contents
-function displayCart() {
-    cartDiv.innerHTML = "<h2>Shopping Cart</h2>";
-
+  }
+  
+  // Display cart items & total
+  function displayCart() {
+    cartList.innerHTML = ""; // Clear previous items
+  
     if (cart.length === 0) {
-        cartDiv.innerHTML += "<p>Your cart is empty.</p>";
-        return;
+      cartList.innerHTML = "<p>Your cart is empty.</p>";
+      totalPrice.textContent = "Total: $0";
+      return;
     }
-
+  
     cart.forEach((item, index) => {
-        cartDiv.innerHTML += `
-            <div>
-                <p>${item.name} - $${item.price}</p>
-                <button onclick="removeFromCart(${index})">Remove</button>
-            </div>
-        `;
+      const itemDiv = document.createElement("div");
+      itemDiv.className = "cart-item";
+      itemDiv.innerHTML = `
+        <p>${item.name} - $${item.price}</p>
+        <button onclick="removeFromCart(${index})">Remove</button>
+      `;
+      cartList.appendChild(itemDiv);
     });
-
-    const total = cart.reduce((sum, item) => sum + item.price, 0);
-    cartDiv.innerHTML += `<h3>Total: $${total}</h3>`;
-}
-
-// Search functionality
-searchBar.addEventListener("input", (e) => {
-    const searchTerm = e.target.value.toLowerCase();
-    const filteredProducts = products.filter(product =>
-        product.name.toLowerCase().includes(searchTerm)
-    );
-    displayProducts(filteredProducts);
-});
-
-// On page load
-document.addEventListener("DOMContentLoaded", () => {
-    loadCart();
-    displayProducts(products);
-    displayCart();
-});
-document.addEventListener('DOMContentLoaded', function () {
-    fetch('http://localhost:3000/products')
-      .then(response => response.json())
-      .then(data => displayProducts(data));
-  });
   
-  // Remove the hardcoded 'products' array from script.js (it’s now fetched from JSON Server)
-  
-  function viewCart() {
-    const cartList = document.getElementById("cartList");
-    cartList.innerHTML = ""; // Clear current cart display
-
-    cart.forEach((item) => {
-        const cartItem = document.createElement("div");
-        cartItem.className = "cart-item";
-        cartItem.innerHTML = `
-            <h3>${item.name}</h3>
-            <p>Price: $${item.price}</p>
-            <button onclick="removeFromCart(${item.id})">Remove</button>
-        `;
-        cartList.appendChild(cartItem);
-    });
-
     const total = cart.reduce((sum, item) => sum + item.price, 0);
-    document.getElementById("totalPrice").textContent = `Total: $${total}`;
-}
-
-function removeFromCart(productId) {
-    cart = cart.filter(item => item.id !== productId);
-    viewCart();
-}
-
-document.getElementById("checkoutButton").addEventListener("click", () => {
+    totalPrice.textContent = `Total: $${total}`;
+  }
+  
+  // Checkout button click handler
+  checkoutButton.addEventListener("click", () => {
     if (cart.length === 0) {
-        alert("Your cart is empty!");
-        return;
+      alert("Your cart is empty!");
+      return;
     }
     alert("Thank you for your purchase!");
     cart = [];
-    viewCart();
-});
+    saveCart();
+    displayCart();
+  });
+  
+  // Search bar functionality
+  searchBar.addEventListener("input", (e) => {
+    const searchTerm = e.target.value.toLowerCase();
+    const filteredProducts = products.filter((product) =>
+      product.name.toLowerCase().includes(searchTerm)
+    );
+    displayProducts(filteredProducts);
+  });
+  
+  // On page load
+  document.addEventListener("DOMContentLoaded", () => {
+    loadCart();
+    displayProducts(products);
+    displayCart();
+  });
+  
