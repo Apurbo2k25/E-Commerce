@@ -1,0 +1,13 @@
+{
+    "products": [
+      { "id": 1, "name": "Laptop", "price": 2099, "image": "laptop.jpg" },
+      { "id": 2, "name": "Headphones", "price": 399, "image": "headphone.jpg" },
+      { "id": 3, "name": "Smartphone", "price": 3599, "image": "phone.jpg" },
+      { "id": 4, "name": "Camera", "price": 5099, "image": "camera.jpg" },
+      { "id": 5, "name": "PS5", "price": 1699, "image": "ps5.jpg" },
+      { "id": 6, "name": "Gaming PC", "price": 3000, "image": "gaming_pc.jpg" },
+      { "id": 7, "name": "Guitar", "price": 499, "image": "guitar.jpg" },
+      { "id": 8, "name": "Nintendo", "price": 599, "image": "nintendo.jpg" }
+    ]
+  }
+  
